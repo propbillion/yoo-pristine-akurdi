@@ -1,4 +1,4 @@
-// Google Ads Conversion Tracking - Yoo Pristine
+// Google Ads Conversion Tracking - V-One Heartland
 document.addEventListener('click', function(e) {
   var el = e.target.closest('a[href*="wa.me"]');
   if (el && typeof gtag === 'function') {
@@ -378,4 +378,36 @@ document.addEventListener('click', function(e) {
   if (closeBtn) closeBtn.addEventListener('click', close);
   pm.addEventListener('click', (e) => { if (e.target === pm) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+})();
+
+// ============================================================
+// AUTO IMAGE COMPRESSION - V-One Heartland
+// Rewrites lazy-loaded <img> src to a resize/compress proxy
+// (wsrv.nl) at runtime, so large brochure-quality uploads are
+// served as smaller, WEBP-optimised files without quality loss
+// to the eye. The LCP hero image (fetchpriority="high") is
+// left untouched so first paint stays fast and uncompromised.
+// If the proxy ever fails to load, the original file is restored.
+// ============================================================
+(function () {
+  var PROXY = 'https://wsrv.nl/?url=';
+  var imgs = document.querySelectorAll('img[loading="lazy"]');
+  imgs.forEach(function (img) {
+    if (img.dataset.noOptimize === 'true') return;
+    var original = img.getAttribute('src');
+    if (!original || original.indexOf('http') === 0) return; // skip already-absolute/external
+
+    var absolute = new URL(original, window.location.href).href;
+    var w = img.getAttribute('width') || 900;
+    var proxied = PROXY + encodeURIComponent(absolute) + '&w=' + w + '&output=webp&q=80';
+
+    img.dataset.originalSrc = absolute;
+    img.addEventListener('error', function onErr() {
+      if (img.src !== img.dataset.originalSrc) {
+        img.src = img.dataset.originalSrc;
+      }
+      img.removeEventListener('error', onErr);
+    });
+    img.src = proxied;
+  });
 })();
